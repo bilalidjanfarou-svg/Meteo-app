@@ -15,6 +15,7 @@ export default function App() {
   const [nom, setNom] = useState("");
   const [erreur, setErreur] = useState("");
   const [chargement, setChargement] = useState(false);
+  const [unite, setUnite] = useState("C");
 
   async function rechercher(e) {
     e.preventDefault();
@@ -45,9 +46,20 @@ export default function App() {
     }
   }
 
+  const convertir = (t) =>
+  unite === "C" ? Math.round(t) : Math.round((t * 9) / 5 + 32);
+
   return (
     <div className="app">
       <h1>Météo</h1>
+
+      <button
+        type="button"
+        className="unite"
+        onClick={() => setUnite(unite === "C" ? "F" : "C")}
+>
+         Passer en °{unite === "C" ? "F" : "C"}
+      </button>
       <form onSubmit={rechercher}>
         <input
           value={ville}
@@ -64,7 +76,7 @@ export default function App() {
         <>
           <div className="carte">
             <h2>{nom}</h2>
-            <p className="temp">{Math.round(data.current.temperature_2m)}°C</p>
+            <p className="temp">{convertir(data.current.temperature_2m)}°{unite}</p>
             <p>{decrire(data.current.weather_code)}</p>
             <p>💧 {data.current.relative_humidity_2m}% · 💨 {data.current.wind_speed_10m} km/h</p>
           </div>
@@ -77,8 +89,8 @@ export default function App() {
                 </strong>
                 <span>{decrire(data.daily.weather_code[i + 1]).split(" ")[0]}</span>
                 <small>
-                  {Math.round(data.daily.temperature_2m_min[i + 1])}° /{" "}
-                  {Math.round(data.daily.temperature_2m_max[i + 1])}°
+                  {convertir(data.daily.temperature_2m_min[i + 1])}° /{" "}
+                  {convertir(data.daily.temperature_2m_max[i + 1])}°
                 </small>
               </div>
             ))}

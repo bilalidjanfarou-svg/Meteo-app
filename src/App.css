@@ -8,3 +8,19 @@ button { padding: 10px 16px; border: none; border-radius: 8px; background: #38bd
 .jours { display: flex; gap: 8px; }
 .jour { flex: 1; background: #1e293b; border-radius: 12px; padding: 10px 4px; display: flex; flex-direction: column; gap: 4px; }
 .erreur { color: #f87171; }
+.unite { margin-bottom: 16px; background: #334155; color: #f1f5f9; }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
