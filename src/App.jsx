@@ -17,34 +17,62 @@ export default function App() {
   const [chargement, setChargement] = useState(false);
   const [unite, setUnite] = useState("C");
 
-  async function rechercher(e) {
-    e.preventDefault();
-    if (!ville.trim()) return;
-    setChargement(true);
-    setErreur("");
-    setData(null);
-    try {
-      const geo = await fetch(
-        `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(ville)}&count=1&language=fr`
-      ).then((r) => r.json());
+  async function chargerMeteo(latitude, longitude, libelle) {
+  const meteo = await fetch(
+    `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}` +
+      `&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code` +
+      `&daily=temperature_2m_max,temperature_2m_min,weather_code&timezone=auto`
+  ).then((r) => r.json());
 
-      if (!geo.results) throw new Error("Ville introuvable");
-      const { latitude, longitude, name, country } = geo.results[0];
+  setNom(libelle);
+  setData(meteo);
+}
 
-      const meteo = await fetch(
-        `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}` +
-          `&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code` +
-          `&daily=temperature_2m_max,temperature_2m_min,weather_code&timezone=auto`
-      ).then((r) => r.json());
+async function rechercher(e) {
+  e.preventDefault();
+  if (!ville.trim()) return;
+  setChargement(true);
+  setErreur("");
+  setData(null);
+  try {
+    const geo = await fetch(
+      `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(ville)}&count=1&language=fr`
+    ).then((r) => r.json());
 
-      setNom(`${name}, ${country}`);
-      setData(meteo);
-    } catch (err) {
-      setErreur(err.message || "Erreur réseau");
-    } finally {
+    if (!geo.results) throw new Error("Ville introuvable");
+    const { latitude, longitude, name, country } = geo.results[0];
+    await chargerMeteo(latitude, longitude, `${name}, ${country}`);
+  } catch (err) {
+    setErreur(err.message || "Erreur réseau");
+  } finally {
+    setChargement(false);
+  }
+}
+
+function geolocaliser() {
+  if (!navigator.geolocation) {
+    setErreur("Géolocalisation non supportée par ce navigateur");
+    return;
+  }
+  setChargement(true);
+  setErreur("");
+  setData(null);
+  navigator.geolocation.getCurrentPosition(
+    async ({ coords }) => {
+      try {
+        await chargerMeteo(coords.latitude, coords.longitude, "📍 Ma position");
+      } catch {
+        setErreur("Erreur réseau");
+      } finally {
+        setChargement(false);
+      }
+    },
+    () => {
+      setErreur("Position refusée ou indisponible");
       setChargement(false);
     }
-  }
+  );
+}
 
   const convertir = (t) =>
   unite === "C" ? Math.round(t) : Math.round((t * 9) / 5 + 32);
@@ -60,7 +88,11 @@ export default function App() {
 >
          Passer en °{unite === "C" ? "F" : "C"}
       </button>
+
       <form onSubmit={rechercher}>
+        <button type="button" className="geo" onClick={geolocaliser}>
+  📍       Utiliser ma position
+        </button>
         <input
           value={ville}
           onChange={(e) => setVille(e.target.value)}
