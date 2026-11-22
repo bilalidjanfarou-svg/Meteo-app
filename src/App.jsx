@@ -67,6 +67,14 @@ async function chercherVille(nomVille) {
   }
 }
 
+useEffect(() => {
+  if (historique[0]) {
+    setVille(historique[0]);
+    chercherVille(historique[0]);
+  }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+}, []);
+
 function rechercher(e) {
   e.preventDefault();
   chercherVille(ville);
