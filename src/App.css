@@ -10,7 +10,9 @@ button { padding: 10px 16px; border: none; border-radius: 8px; background: #38bd
 .erreur { color: #f87171; }
 .unite { margin-bottom: 16px; background: #334155; color: #f1f5f9; }
 .geo { margin-bottom: 16px; background: #22c55e; }
-
+.historique { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 16px; }
+.historique button { background: #334155; color: #f1f5f9; padding: 6px 12px; border-radius: 999px; font-weight: 400; }
+.historique .vider { background: transparent; color: #f87171; }
 
 
 

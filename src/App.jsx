@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { useState } from "react";
 import "./App.css";
 
@@ -16,6 +17,17 @@ export default function App() {
   const [erreur, setErreur] = useState("");
   const [chargement, setChargement] = useState(false);
   const [unite, setUnite] = useState("C");
+  const [historique, setHistorique] = useState(() => {
+  try {
+    return JSON.parse(localStorage.getItem("historique")) || [];
+  } catch {
+    return [];
+  }
+});
+
+useEffect(() => {
+  localStorage.setItem("historique", JSON.stringify(historique));
+}, [historique]);
 
   async function chargerMeteo(latitude, longitude, libelle) {
   const meteo = await fetch(
@@ -28,25 +40,36 @@ export default function App() {
   setData(meteo);
 }
 
-async function rechercher(e) {
-  e.preventDefault();
-  if (!ville.trim()) return;
+function ajouterHistorique(nomVille) {
+  setHistorique((h) =>
+    [nomVille, ...h.filter((v) => v !== nomVille)].slice(0, 5)
+  );
+}
+
+async function chercherVille(nomVille) {
+  if (!nomVille.trim()) return;
   setChargement(true);
   setErreur("");
   setData(null);
   try {
     const geo = await fetch(
-      `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(ville)}&count=1&language=fr`
+      `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(nomVille)}&count=1&language=fr`
     ).then((r) => r.json());
 
     if (!geo.results) throw new Error("Ville introuvable");
     const { latitude, longitude, name, country } = geo.results[0];
     await chargerMeteo(latitude, longitude, `${name}, ${country}`);
+    ajouterHistorique(name);
   } catch (err) {
     setErreur(err.message || "Erreur réseau");
   } finally {
     setChargement(false);
   }
+}
+
+function rechercher(e) {
+  e.preventDefault();
+  chercherVille(ville);
 }
 
 function geolocaliser() {
@@ -93,6 +116,26 @@ function geolocaliser() {
         <button type="button" className="geo" onClick={geolocaliser}>
   📍       Utiliser ma position
         </button>
+
+      {historique.length > 0 && (
+  <div className="historique">
+    {historique.map((v) => (
+      <button
+        type="button"
+        key={v}
+        onClick={() => {
+          setVille(v);
+          chercherVille(v);
+        }}
+      >
+        {v}
+      </button>
+    ))}
+    <button type="button" className="vider" onClick={() => setHistorique([])}>
+      ✕ Vider
+    </button>
+  </div>
+)}
         <input
           value={ville}
           onChange={(e) => setVille(e.target.value)}
