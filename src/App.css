@@ -1,0 +1,10 @@
+body { margin: 0; background: #0f172a; color: #f1f5f9; font-family: system-ui, sans-serif; }
+.app { max-width: 480px; margin: 0 auto; padding: 24px 16px; text-align: center; }
+form { display: flex; gap: 8px; margin-bottom: 20px; }
+input { flex: 1; padding: 10px; border-radius: 8px; border: none; font-size: 16px; }
+button { padding: 10px 16px; border: none; border-radius: 8px; background: #38bdf8; font-weight: 600; cursor: pointer; }
+.carte { background: #1e293b; border-radius: 16px; padding: 20px; margin-bottom: 16px; }
+.temp { font-size: 56px; margin: 8px 0; font-weight: 700; }
+.jours { display: flex; gap: 8px; }
+.jour { flex: 1; background: #1e293b; border-radius: 12px; padding: 10px 4px; display: flex; flex-direction: column; gap: 4px; }
+.erreur { color: #f87171; }
