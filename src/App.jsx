@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import "./App.css";
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
-
+import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 const CODES = {
   0: "☀️ Ciel dégagé", 1: "🌤️ Plutôt dégagé", 2: "⛅ Nuageux",
   3: "☁️ Couvert", 45: "🌫️ Brouillard", 51: "🌦️ Bruine",
@@ -189,6 +189,21 @@ function geolocaliser() {
         fillOpacity={0.3}
       />
     </AreaChart>
+  </ResponsiveContainer>
+</div>
+
+          <div className="graphique">
+  <h3>Probabilité de pluie</h3>
+  <ResponsiveContainer width="100%" height={160}>
+    <BarChart data={donneesHoraires}>
+      <XAxis dataKey="heure" interval={3} stroke="#94a3b8" fontSize={12} />
+      <YAxis stroke="#94a3b8" fontSize={12} width={36} unit="%" domain={[0, 100]} />
+      <Tooltip
+        contentStyle={{ background: "#0f172a", border: "none" }}
+        formatter={(v) => [`${v}%`, "Pluie"]}
+      />
+      <Bar dataKey="pluie" fill="#60a5fa" radius={[4, 4, 0, 0]} />
+    </BarChart>
   </ResponsiveContainer>
 </div>
           <div className="jours">
