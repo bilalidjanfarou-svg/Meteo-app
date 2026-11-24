@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { useState } from "react";
 import "./App.css";
+import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 
 const CODES = {
   0: "☀️ Ciel dégagé", 1: "🌤️ Plutôt dégagé", 2: "⛅ Nuageux",
@@ -31,10 +31,11 @@ useEffect(() => {
 
   async function chargerMeteo(latitude, longitude, libelle) {
   const meteo = await fetch(
-    `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}` +
-      `&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code` +
-      `&daily=temperature_2m_max,temperature_2m_min,weather_code&timezone=auto`
-  ).then((r) => r.json());
+  `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}` +
+    `&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code` +
+    `&hourly=temperature_2m,precipitation_probability` +
+    `&daily=temperature_2m_max,temperature_2m_min,weather_code&timezone=auto`
+).then((r) => r.json());
 
   setNom(libelle);
   setData(meteo);
@@ -108,6 +109,13 @@ function geolocaliser() {
   const convertir = (t) =>
   unite === "C" ? Math.round(t) : Math.round((t * 9) / 5 + 32);
 
+    const donneesHoraires = data
+  ? data.hourly.time.slice(0, 24).map((h, i) => ({
+      heure: h.slice(11, 16),
+      temp: convertir(data.hourly.temperature_2m[i]),
+      pluie: data.hourly.precipitation_probability[i],
+    }))
+  : [];
   return (
     <div className="app">
       <h1>Météo</h1>
@@ -134,7 +142,7 @@ function geolocaliser() {
         onClick={() => {
           setVille(v);
           chercherVille(v);
-        }}
+        }}D
       >
         {v}
       </button>
@@ -144,6 +152,8 @@ function geolocaliser() {
     </button>
   </div>
 )}
+
+  
         <input
           value={ville}
           onChange={(e) => setVille(e.target.value)}
@@ -164,6 +174,23 @@ function geolocaliser() {
             <p>💧 {data.current.relative_humidity_2m}% · 💨 {data.current.wind_speed_10m} km/h</p>
           </div>
 
+            <div className="graphique">
+  <h3>Température sur 24 h</h3>
+  <ResponsiveContainer width="100%" height={180}>
+    <AreaChart data={donneesHoraires}>
+      <XAxis dataKey="heure" interval={3} stroke="#94a3b8" fontSize={12} />
+      <YAxis stroke="#94a3b8" fontSize={12} width={32} unit="°" />
+      <Tooltip contentStyle={{ background: "#0f172a", border: "none" }} />
+      <Area
+        type="monotone"
+        dataKey="temp"
+        stroke="#38bdf8"
+        fill="#38bdf8"
+        fillOpacity={0.3}
+      />
+    </AreaChart>
+  </ResponsiveContainer>
+</div>
           <div className="jours">
             {data.daily.time.slice(1, 6).map((jour, i) => (
               <div className="jour" key={jour}>

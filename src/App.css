@@ -13,7 +13,8 @@ button { padding: 10px 16px; border: none; border-radius: 8px; background: #38bd
 .historique { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 16px; }
 .historique button { background: #334155; color: #f1f5f9; padding: 6px 12px; border-radius: 999px; font-weight: 400; }
 .historique .vider { background: transparent; color: #f87171; }
-
+.graphique { background: #1e293b; border-radius: 16px; padding: 16px; margin-bottom: 16px; }
+.graphique h3 { margin: 0 0 8px; font-size: 16px; }
 
 
 
