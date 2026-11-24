@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import "./App.css";
-import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
+
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 const CODES = {
   0: "☀️ Ciel dégagé", 1: "🌤️ Plutôt dégagé", 2: "⛅ Nuageux",
@@ -46,14 +46,14 @@ useEffect(() => {
 }, [historique]);
 
   async function chargerMeteo(latitude, longitude, libelle) {
-  const meteo = await fetch(
-  `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}` +
-    `&current=temperature_2m,relative_humidity_2m,apparent_temperature,wind_speed_10m,weather_code` +
-    `&hourly=temperature_2m,precipitation_probability` +
-    `&daily=temperature_2m_max,temperature_2m_min,weather_code,sunrise,sunset,uv_index_max&timezone=auto`
+  const url =
+    `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}` +
     `&current=temperature_2m,relative_humidity_2m,apparent_temperature,wind_speed_10m,weather_code,is_day` +
+    `&hourly=temperature_2m,precipitation_probability` +
+    `&daily=temperature_2m_max,temperature_2m_min,weather_code,sunrise,sunset,uv_index_max` +
+    `&timezone=auto`;
 
-).then((r) => r.json());
+  const meteo = await fetch(url).then((r) => r.json());
 
   setNom(libelle);
   setData(meteo);
