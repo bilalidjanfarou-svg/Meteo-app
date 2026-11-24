@@ -29,6 +29,17 @@ export default function App() {
     ? themeFond(data.current.weather_code, data.current.is_day === 1)
     : "none";
 }, [data]);
+  const [favoris, setFavoris] = useState(() => {
+  try {
+    return JSON.parse(localStorage.getItem("favoris")) || [];
+  } catch {
+    return [];
+  }
+});
+
+useEffect(() => {
+  localStorage.setItem("favoris", JSON.stringify(favoris));
+}, [favoris]);
 
 function genererConseils(data) {
   const c = data.current;
@@ -153,6 +164,16 @@ function geolocaliser() {
   const convertir = (t) =>
     
   unite === "C" ? Math.round(t) : Math.round((t * 9) / 5 + 32);
+  const villeCourante = nom.split(",")[0].trim();
+const estFavori = favoris.includes(villeCourante);
+
+function basculerFavori() {
+  setFavoris((f) =>
+    f.includes(villeCourante)
+      ? f.filter((v) => v !== villeCourante)
+      : [villeCourante, ...f].slice(0, 8)
+  );
+}
 
   const niveauUV = (uv) => {
   if (uv < 3) return "Faible";
@@ -203,8 +224,26 @@ function geolocaliser() {
       ✕ Vider
     </button>
   </div>
+
 )}
 
+{favoris.length > 0 && (
+  <div className="favoris">
+    <span>⭐ Favoris</span>
+    {favoris.map((v) => (
+      <button
+        type="button"
+        key={v}
+        onClick={() => {
+          setVille(v);
+          chercherVille(v);
+        }}
+      >
+        {v}
+      </button>
+    ))}
+  </div>
+)}
   
         <input
           value={ville}
@@ -220,7 +259,14 @@ function geolocaliser() {
       {data && (
         <>
           <div className="carte">
-            <h2>{nom}</h2>
+            <h2>
+              {nom}
+              {!nom.startsWith("📍") && (
+                <button type="button" className="etoile" onClick={basculerFavori}>
+                  {estFavori ? "★" : "☆"}
+                </button>
+              )}
+            </h2>
             <p className="temp">{convertir(data.current.temperature_2m)}°{unite}</p>
             <p>{decrire(data.current.weather_code)}</p>
             
