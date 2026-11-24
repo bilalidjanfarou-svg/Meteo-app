@@ -32,9 +32,9 @@ useEffect(() => {
   async function chargerMeteo(latitude, longitude, libelle) {
   const meteo = await fetch(
   `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}` +
-    `&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code` +
+    `&current=temperature_2m,relative_humidity_2m,apparent_temperature,wind_speed_10m,weather_code` +
     `&hourly=temperature_2m,precipitation_probability` +
-    `&daily=temperature_2m_max,temperature_2m_min,weather_code&timezone=auto`
+    `&daily=temperature_2m_max,temperature_2m_min,weather_code,sunrise,sunset,uv_index_max&timezone=auto`
 ).then((r) => r.json());
 
   setNom(libelle);
@@ -107,7 +107,15 @@ function geolocaliser() {
 }
 
   const convertir = (t) =>
+    
   unite === "C" ? Math.round(t) : Math.round((t * 9) / 5 + 32);
+
+  const niveauUV = (uv) => {
+  if (uv < 3) return "Faible";
+  if (uv < 6) return "Modéré";
+  if (uv < 8) return "Élevé";
+  return "Très élevé";
+};
 
     const donneesHoraires = data
   ? data.hourly.time.slice(0, 24).map((h, i) => ({
@@ -171,8 +179,37 @@ function geolocaliser() {
             <h2>{nom}</h2>
             <p className="temp">{convertir(data.current.temperature_2m)}°{unite}</p>
             <p>{decrire(data.current.weather_code)}</p>
-            <p>💧 {data.current.relative_humidity_2m}% · 💨 {data.current.wind_speed_10m} km/h</p>
+            
           </div>
+
+          <div className="infos">
+  <div className="info">
+    <span>🌡️ Ressenti</span>
+    <strong>{convertir(data.current.apparent_temperature)}°{unite}</strong>
+  </div>
+  <div className="info">
+    <span>💧 Humidité</span>
+    <strong>{data.current.relative_humidity_2m}%</strong>
+  </div>
+  <div className="info">
+    <span>💨 Vent</span>
+    <strong>{Math.round(data.current.wind_speed_10m)} km/h</strong>
+  </div>
+  <div className="info">
+    <span>☀️ Indice UV</span>
+    <strong>
+      {Math.round(data.daily.uv_index_max[0])} · {niveauUV(data.daily.uv_index_max[0])}
+    </strong>
+  </div>
+  <div className="info">
+    <span>🌅 Lever</span>
+    <strong>{data.daily.sunrise[0].slice(11, 16)}</strong>
+  </div>
+  <div className="info">
+    <span>🌇 Coucher</span>
+    <strong>{data.daily.sunset[0].slice(11, 16)}</strong>
+  </div>
+</div>
 
             <div className="graphique">
   <h3>Température sur 24 h</h3>
