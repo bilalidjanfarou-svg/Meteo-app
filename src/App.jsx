@@ -24,7 +24,23 @@ export default function App() {
     return [];
   }
 });
+  useEffect(() => {
+  document.body.style.backgroundImage = data
+    ? themeFond(data.current.weather_code, data.current.is_day === 1)
+    : "none";
+}, [data]);
 
+function themeFond(code, jour) {
+  if (!jour) return "linear-gradient(160deg, #0f172a, #312e81)";
+  if (code <= 1) return "linear-gradient(160deg, #0284c7, #38bdf8)";
+  if (code <= 3) return "linear-gradient(160deg, #475569, #94a3b8)";
+  if (code === 45 || code === 48) return "linear-gradient(160deg, #64748b, #cbd5e1)";
+  if ((code >= 51 && code <= 67) || (code >= 80 && code <= 82))
+    return "linear-gradient(160deg, #1e3a5f, #475569)";
+  if (code >= 71 && code <= 86) return "linear-gradient(160deg, #94a3b8, #e2e8f0)";
+  if (code >= 95) return "linear-gradient(160deg, #1e1b4b, #581c87)";
+  return "linear-gradient(160deg, #0f172a, #1e293b)";
+}
 useEffect(() => {
   localStorage.setItem("historique", JSON.stringify(historique));
 }, [historique]);
@@ -35,6 +51,8 @@ useEffect(() => {
     `&current=temperature_2m,relative_humidity_2m,apparent_temperature,wind_speed_10m,weather_code` +
     `&hourly=temperature_2m,precipitation_probability` +
     `&daily=temperature_2m_max,temperature_2m_min,weather_code,sunrise,sunset,uv_index_max&timezone=auto`
+    `&current=temperature_2m,relative_humidity_2m,apparent_temperature,wind_speed_10m,weather_code,is_day` +
+
 ).then((r) => r.json());
 
   setNom(libelle);
