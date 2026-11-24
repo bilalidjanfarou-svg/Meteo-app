@@ -30,6 +30,32 @@ export default function App() {
     : "none";
 }, [data]);
 
+function genererConseils(data) {
+  const c = data.current;
+  const ressenti = c.apparent_temperature;
+  const pluieMax = Math.max(...data.hourly.precipitation_probability.slice(0, 24));
+  const uv = data.daily.uv_index_max[0];
+  const conseils = [];
+
+  if (c.weather_code >= 95) conseils.push("⛈️ Orage possible : reste à l'abri.");
+  if (pluieMax >= 60) conseils.push("☔ Prends un parapluie, la pluie est très probable.");
+  else if (pluieMax >= 30) conseils.push("🌦️ Risque d'averse : garde un parapluie à portée.");
+
+  if (ressenti >= 35) conseils.push("🥵 Chaleur extrême : évite l'effort et bois beaucoup d'eau.");
+  else if (ressenti >= 30) conseils.push("💧 Il fait chaud : pense à bien t'hydrater.");
+  else if (ressenti <= 5) conseils.push("🥶 Très froid : couvre-toi bien.");
+  else if (ressenti <= 15) conseils.push("🧥 Prends une veste, il fait frais.");
+
+  if (uv >= 6) conseils.push("🧴 UV élevé : crème solaire, et évite le soleil de 12h à 16h.");
+  else if (uv >= 3) conseils.push("🕶️ Des lunettes de soleil seront utiles.");
+
+  if (c.wind_speed_10m >= 40) conseils.push("💨 Vent fort : attention aux objets légers.");
+  if (c.relative_humidity_2m >= 85 && ressenti >= 25) conseils.push("💦 Temps lourd et humide.");
+
+  if (conseils.length === 0) conseils.push("✅ Conditions agréables, profite de ta journée !");
+  return conseils.slice(0, 4);
+}
+
 function themeFond(code, jour) {
   if (!jour) return "linear-gradient(160deg, #0f172a, #312e81)";
   if (code <= 1) return "linear-gradient(160deg, #0284c7, #38bdf8)";
@@ -199,7 +225,12 @@ function geolocaliser() {
             <p>{decrire(data.current.weather_code)}</p>
             
           </div>
-
+          
+          <div className="conseils">
+            {genererConseils(data).map((conseil) => (
+            <p key={conseil}>{conseil}</p>
+            ))}
+          </div>
           <div className="infos">
   <div className="info">
     <span>🌡️ Ressenti</span>
