@@ -36,7 +36,8 @@ button { padding: 10px 16px; border: none; border-radius: 8px; background: #38bd
 .favoris { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; align-items: center; margin-bottom: 16px; }
 .favoris span { font-size: 14px; color: #94a3b8; }
 .favoris button { background: #854d0e; color: #fef9c3; padding: 6px 12px; border-radius: 999px; font-weight: 400; }
-
+.carte-geo { background: rgba(15, 23, 42, 0.45); backdrop-filter: blur(6px); border-radius: 16px; padding: 16px; margin-top: 16px; }
+.carte-geo h3 { margin: 0 0 8px; font-size: 16px; }
 
 
 

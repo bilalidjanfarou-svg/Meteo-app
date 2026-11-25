@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import "./App.css";
 
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
+import { MapContainer, TileLayer, CircleMarker, Popup } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
 const CODES = {
   0: "☀️ Ciel dégagé", 1: "🌤️ Plutôt dégagé", 2: "⛅ Nuageux",
   3: "☁️ Couvert", 45: "🌫️ Brouillard", 51: "🌦️ Bruine",
@@ -324,7 +326,7 @@ function basculerFavori() {
   </ResponsiveContainer>
 </div>
 
-          <div className="graphique">
+  <div className="graphique">
   <h3>Probabilité de pluie</h3>
   <ResponsiveContainer width="100%" height={160}>
     <BarChart data={donneesHoraires}>
@@ -352,6 +354,32 @@ function basculerFavori() {
               </div>
             ))}
           </div>
+
+
+          <div className="carte-geo">
+  <h3>📍 Localisation</h3>
+  <MapContainer
+    key={`${data.latitude}-${data.longitude}`}
+    center={[data.latitude, data.longitude]}
+    zoom={10}
+    scrollWheelZoom={false}
+    style={{ height: 220, borderRadius: 12 }}
+  >
+    <TileLayer
+      attribution="&copy; OpenStreetMap contributors"
+      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+    />
+    <CircleMarker
+      center={[data.latitude, data.longitude]}
+      radius={10}
+      pathOptions={{ color: "#38bdf8", fillOpacity: 0.7 }}
+    >
+      <Popup>
+        {nom} · {convertir(data.current.temperature_2m)}°{unite}
+      </Popup>
+    </CircleMarker>
+  </MapContainer>
+</div>
         </>
       )}
     </div>
