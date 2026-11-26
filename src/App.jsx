@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import "./App.css";
 
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
-import { MapContainer, TileLayer, CircleMarker, Popup } from "react-leaflet";
+import { MapContainer, TileLayer, CircleMarker, Popup, useMap, useMapEvents } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 const CODES = {
   0: "☀️ Ciel dégagé", 1: "🌤️ Plutôt dégagé", 2: "⛅ Nuageux",
@@ -12,6 +12,22 @@ const CODES = {
 };
 const decrire = (c) => CODES[c] || "🌡️ Météo variable";
 
+function ClicCarte({ onChoix }) {
+  useMapEvents({
+    click(e) {
+      onChoix(e.latlng.lat, e.latlng.lng);
+    },
+  });
+  return null;
+}
+
+function Recentrer({ lat, lng }) {
+  const map = useMap();
+  useEffect(() => {
+    map.setView([lat, lng]);
+  }, [lat, lng, map]);
+  return null;
+}
 export default function App() {
   const [ville, setVille] = useState("");
   const [data, setData] = useState(null);
